@@ -36,7 +36,24 @@ void Tema1::Init()
     glm::vec3 corner = glm::vec3(0.001, 0.001, 0);
     length = 0.99f;
 
-    duck = new Duck("duck1", glm::vec3(0, 0, 0));
+    duck = new Duck("duck1", glm::vec3(0, 1, 0));
+   
+    // background
+    glm::vec3 bColor = glm::vec3(0.1, 0.1, 0.1);
+    std::vector<VertexFormat> backVertices =
+    {
+        VertexFormat(glm::vec3(-SPACE_BORDER_X, 0, 0), bColor),
+        VertexFormat(glm::vec3(SPACE_BORDER_X, 0, 0), bColor),
+        VertexFormat(glm::vec3(-SPACE_BORDER_X, SPACE_BORDER_Y, 0), bColor),
+    };
+
+    this->backMesh = new Mesh("background");
+    std::vector<unsigned int> indices = { 0, 1, 2 };
+
+    backMesh->InitFromData(backVertices, indices);
+    AddMeshToList(backMesh);
+
+
 
     AddMeshToList(duck->GetBodyMesh());
     AddMeshToList(duck->GetHeadMesh());
@@ -58,19 +75,22 @@ void Tema1::Init()
 // Uniform 2D visualization matrix (same scale factor on x and y axes)
 glm::mat3 Tema1::VisualizationTransf2DUnif(const LogicSpace& logicSpace, const ViewportSpace& viewSpace)
 {
-    float sx, sy, tx, ty, smin;
+    float sx, sy, tx, ty, smin, tsx, tsy;
     sx = viewSpace.width / logicSpace.width;
     sy = viewSpace.height / logicSpace.height;
     if (sx < sy)
         smin = sx;
     else
         smin = sy;
-    tx = viewSpace.x - smin * logicSpace.x + (viewSpace.width - smin * logicSpace.width);
-    ty = viewSpace.y - smin * logicSpace.y + (viewSpace.height - smin * logicSpace.height);
+    tx = viewSpace.x - smin * logicSpace.x;
+    ty = viewSpace.y - smin * logicSpace.y;
+
+    tsx = (viewSpace.width - smin * (logicSpace.width));
+    tsy = (viewSpace.height - smin * (logicSpace.height));
 
     return glm::transpose(glm::mat3(
-        smin, 0.0f, tx,
-        0.0f, smin, ty,
+        smin, 0.0f, tsx,
+        0.0f, smin, tsy,
         0.0f, 0.0f, 1.0f));
 }
 
@@ -110,7 +130,7 @@ void Tema1::Update(float deltaTimeSeconds)
     // Sets the screen area where to draw
 
     viewSpace = ViewportSpace(0, 0, resolution.x, resolution.y);
-    SetViewportArea(viewSpace, glm::vec3(0.), true);
+    SetViewportArea(viewSpace, glm::vec3(0), true);
 
     // Compute uniform 2D visualization matrix
     visMatrix = glm::mat3(1);
@@ -128,6 +148,9 @@ void Tema1::FrameEnd()
 
 void Tema1::DrawScene(glm::mat3 visMatrix)
 {
+    RenderMesh2D(this->backMesh, shaders["DuckShader"], visMatrix);
+
+
     modelMatrix = visMatrix * duck->GetModelMatrix();
 
     RenderSimpleMesh(duck->GetBodyMesh(), shaders["DuckShader"], modelMatrix);

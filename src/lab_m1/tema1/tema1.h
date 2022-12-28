@@ -74,5 +74,6 @@ namespace tema
         glm::mat3 modelMatrix, visMatrix;
 
         Duck* duck;
+        Mesh* backMesh;
     };
 }   // namespace tema

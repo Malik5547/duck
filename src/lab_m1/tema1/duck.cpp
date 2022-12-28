@@ -22,7 +22,7 @@ Duck::~Duck() {
 }
 
 void Duck::CreateMeshes() {
-    glm::vec3 corner = this->position;
+    glm::vec3 corner = glm::vec3(0, 0, 0);
 
     glm::vec3 color = glm::vec3(1, 0, 0);
     glm::vec3 head_color = glm::vec3(0, 1, 0);
@@ -34,7 +34,7 @@ void Duck::CreateMeshes() {
     {
         VertexFormat(corner + glm::vec3(DUCK_BODY_START, 0, 0), color),
         VertexFormat(corner + glm::vec3(DUCK_BODY_END, 0, 0), color),
-        VertexFormat(corner + glm::vec3(DUCK_WIDTH / 2, DUCK_BODY_HEIGHT, 0), color),
+        VertexFormat(corner + glm::vec3(DUCK_BODY_START + DUCK_BODY_WIDTH / 2, DUCK_BODY_HEIGHT, 0), color),
     };
 
     // create body mesh
@@ -47,7 +47,7 @@ void Duck::CreateMeshes() {
 
     std::vector<VertexFormat> head_vertices =
     {
-        VertexFormat(corner + glm::vec3(DUCK_WIDTH / 2, DUCK_HEIGHT, 1), head_color),
+        VertexFormat(corner + glm::vec3(DUCK_BODY_START + DUCK_BODY_WIDTH / 2, DUCK_HEIGHT, 1), head_color),
     };
 
     this->head_mesh = new Mesh(this->name + "_head");
@@ -62,9 +62,9 @@ void Duck::CreateMeshes() {
 
     std::vector<VertexFormat> l_wing_vertices =
     {
-        VertexFormat(corner + glm::vec3(DUCK_WIDTH / 2, DUCK_WING_START, 0), wing_color),
-        VertexFormat(corner + glm::vec3(DUCK_WIDTH / 2, DUCK_WING_END, 0), wing_color),
-        VertexFormat(corner + glm::vec3(DUCK_WIDTH / 2 - DUCK_WING_LENGTH, DUCK_WING_MID, 0), wing_color),
+        VertexFormat(corner + glm::vec3(DUCK_BODY_START + DUCK_BODY_WIDTH / 2, DUCK_WING_START, 0), wing_color),
+        VertexFormat(corner + glm::vec3(DUCK_BODY_START + DUCK_BODY_WIDTH / 2, DUCK_WING_END, 0), wing_color),
+        VertexFormat(corner + glm::vec3(DUCK_BODY_START + DUCK_BODY_WIDTH / 2 - DUCK_WING_LENGTH, DUCK_WING_MID, 0), wing_color),
     };
 
     l_wing_mesh = new Mesh(this->name + "_wing_1");
@@ -76,9 +76,9 @@ void Duck::CreateMeshes() {
 
     std::vector<VertexFormat> r_wing_vertices =
     {
-        VertexFormat(corner + glm::vec3(DUCK_WIDTH / 2, DUCK_WING_START, 0), wing_color),
-        VertexFormat(corner + glm::vec3(DUCK_WIDTH / 2, DUCK_WING_END, 0), wing_color),
-        VertexFormat(corner + glm::vec3(DUCK_WIDTH / 2 + DUCK_WING_LENGTH, DUCK_WING_MID, 0), wing_color),
+        VertexFormat(corner + glm::vec3(DUCK_BODY_START + DUCK_BODY_WIDTH / 2, DUCK_WING_START, 0), wing_color),
+        VertexFormat(corner + glm::vec3(DUCK_BODY_START + DUCK_BODY_WIDTH / 2, DUCK_WING_END, 0), wing_color),
+        VertexFormat(corner + glm::vec3(DUCK_BODY_START + DUCK_BODY_WIDTH / 2 + DUCK_WING_LENGTH, DUCK_WING_MID, 0), wing_color),
     };
 
     this->r_wing_mesh = new Mesh(this->name + "_wing_2");
@@ -93,11 +93,11 @@ void Duck::CreateMeshes() {
 void Duck::Update(float deltaTime) {
     UpdateAnimation(deltaTime);
 
-    //CheckCollision();
+    CheckCollision();
 
     // move duck
-    //this->position.x += this->dir.x * DUCK_SPEED * deltaTime;
-    //this->position.y += this->dir.y * DUCK_SPEED * deltaTime;
+    this->position.x += this->dir.x * DUCK_SPEED * deltaTime;
+    this->position.y += this->dir.y * DUCK_SPEED * deltaTime;
 
     modelMatrix = glm::mat3(
         1, 0, 0,
@@ -109,12 +109,12 @@ void Duck::UpdateAnimation(float deltaTime) {
     // update wings animation. Animation are based on rotation with sin function
 
     timeElpsed += deltaTime;
-    angularStep = sin(timeElpsed * 1) / 4;
+    angularStep = sin(timeElpsed * 8) / 4;
 
     glm::mat3 translateMatrix = glm::mat3(
         1, 0, 0,
         0, 1, 0,
-        -(DUCK_WING_LENGTH / 2), -(DUCK_WING_MID), 1);
+        -(DUCK_WING_LENGTH), -(DUCK_WING_MID), 1);
 
     glm::mat3 lRotationMatrix = glm::mat3(
         cos(angularStep), sin(angularStep), 0,
@@ -129,7 +129,7 @@ void Duck::UpdateAnimation(float deltaTime) {
     glm::mat3 reverseTranslateMatrix = glm::mat3(
         1, 0, 0,
         0, 1, 0,
-        +(DUCK_WING_LENGTH / 2), +(DUCK_WING_MID), 1);
+        +(DUCK_WING_LENGTH), +(DUCK_WING_MID), 1);
 
     this->lWingModel = reverseTranslateMatrix * lRotationMatrix * translateMatrix;
     this->rWingModel = reverseTranslateMatrix * rRotationMatrix * translateMatrix;
