@@ -39,7 +39,7 @@ void Lab3_Vis2D::Init()
     logicSpace.width = 4;   // logic width
     logicSpace.height = 4;  // logic height
 
-    glm::vec3 corner = glm::vec3(0.001, 0.001, 0);
+    glm::vec3 corner = glm::vec3(0, 0, 0);
     length = 0.99f;
 
     Mesh* square1 = object2D::CreateSquare("square1", corner, length, glm::vec3(1, 0, 0));
@@ -113,18 +113,18 @@ void Lab3_Vis2D::Update(float deltaTimeSeconds)
     glm::ivec2 resolution = window->GetResolution();
 
     // Sets the screen area where to draw - the left half of the window
-    viewSpace = ViewportSpace(0, 0, resolution.x / 2, resolution.y);
-    SetViewportArea(viewSpace, glm::vec3(0), true);
+    //viewSpace = ViewportSpace(0, 0, resolution.x / 2, resolution.y);
+    //SetViewportArea(viewSpace, glm::vec3(0), true);
 
-    // Compute the 2D visualization matrix
-    visMatrix = glm::mat3(1);
-    visMatrix *= VisualizationTransf2D(logicSpace, viewSpace);
+    //// Compute the 2D visualization matrix
+    //visMatrix = glm::mat3(1);
+    //visMatrix *= VisualizationTransf2D(logicSpace, viewSpace);
 
-    DrawScene(visMatrix);
+    //DrawScene(visMatrix);
 
     // The viewport is now the right half of the window
 
-    viewSpace = ViewportSpace(resolution.x / 2, 0, resolution.x / 2, resolution.y);
+    viewSpace = ViewportSpace(0, 0, resolution.x, resolution.y);
     SetViewportArea(viewSpace, glm::vec3(0.5f), true);
 
     // Compute uniform 2D visualization matrix
@@ -144,7 +144,7 @@ void Lab3_Vis2D::DrawScene(glm::mat3 visMatrix)
     modelMatrix = visMatrix * transform2D::Translate(0, 0);
     RenderMesh2D(meshes["square1"], shaders["VertexColor"], modelMatrix);
 
-    modelMatrix = visMatrix * transform2D::Translate(3, 0);
+    /*modelMatrix = visMatrix * transform2D::Translate(3, 0);
     RenderMesh2D(meshes["square1"], shaders["VertexColor"], modelMatrix);
 
     modelMatrix = visMatrix * transform2D::Translate(1.5, 1.5);
@@ -154,7 +154,7 @@ void Lab3_Vis2D::DrawScene(glm::mat3 visMatrix)
     RenderMesh2D(meshes["square1"], shaders["VertexColor"], modelMatrix);
 
     modelMatrix = visMatrix * transform2D::Translate(3, 3);
-    RenderMesh2D(meshes["square1"], shaders["VertexColor"], modelMatrix);
+    RenderMesh2D(meshes["square1"], shaders["VertexColor"], modelMatrix);*/
 }
 
 

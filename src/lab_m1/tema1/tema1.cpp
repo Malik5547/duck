@@ -75,22 +75,19 @@ void Tema1::Init()
 // Uniform 2D visualization matrix (same scale factor on x and y axes)
 glm::mat3 Tema1::VisualizationTransf2DUnif(const LogicSpace& logicSpace, const ViewportSpace& viewSpace)
 {
-    float sx, sy, tx, ty, smin, tsx, tsy;
+    float sx, sy, tx, ty, smin;
     sx = viewSpace.width / logicSpace.width;
     sy = viewSpace.height / logicSpace.height;
     if (sx < sy)
         smin = sx;
     else
         smin = sy;
-    tx = viewSpace.x - smin * logicSpace.x;
-    ty = viewSpace.y - smin * logicSpace.y;
-
-    tsx = (viewSpace.width - smin * (logicSpace.width));
-    tsy = (viewSpace.height - smin * (logicSpace.height));
+    tx = viewSpace.x - smin * logicSpace.x + (viewSpace.width - smin * logicSpace.width) / 2;
+    ty = viewSpace.y - smin * logicSpace.y + (viewSpace.height - smin * logicSpace.height) / 2;
 
     return glm::transpose(glm::mat3(
-        smin, 0.0f, tsx,
-        0.0f, smin, tsy,
+        smin, 0.0f, tx,
+        0.0f, smin, ty,
         0.0f, 0.0f, 1.0f));
 }
 
